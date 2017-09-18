@@ -15,26 +15,26 @@ def validate_turn(board, player_no, row, column):
     # attempted turnparameters not inside the field
     if (row > board.field_height or column > board.field_width) and not (row > 0 and column > 0):
         print("Numbers specified not inside the field")
-        return False
+        return False, None
     # player tried to set on a field already owned
     if curr_board[row][column] in range(1, 9):
         print("Field is already owned by player " + str(curr_board[row][column]))
-        return False
+        return False, None
     elif curr_board[row][column] == 99:
             print("Not a valid field")
-            return False
+            return False, None
     elif curr_board[row][column] == 9:
         # TODO choice stone logic
-        return False
+        return False, None
     elif curr_board[row][column] == 10:
         # TODO inversion stone logic
-        return False
+        return False, None
     elif curr_board[row][column] == 11:
         # TODO bonus stone logic
-        return False
+        return False, None
     elif curr_board[row][column] == 12:
         # TODO expasion stone logic
-        return False
+        return False, None
     # empty Field
     elif curr_board[row][column] == 0:
         return validate_reversi_logic(board, player_no, row, column)
