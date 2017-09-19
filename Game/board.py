@@ -2,6 +2,7 @@
  class to define and create the board
 '''
 import numpy as np
+from const import INVALID_FIELD
 
 class Board:
 
@@ -12,6 +13,8 @@ class Board:
     bomb_strength = 0  # strength of bombs
     no_overwritestones = 0  # number of overwritestones
     curr_board = []  # current board status
+    transitions = []  # transitions over board edges in format
+    # [[from_row, from_col, direction][to_row, to_col, direction]]
 
     ''' read board specification and incorporate it in this class '''
     def __init__(self, board_def):
@@ -32,10 +35,10 @@ class Board:
             curr_line = board_def[i].split(" ")
             for j in range(0, self.field_width):
                 ''' choicestone (c) = 9, inversion stone (i) = 10, bonus stone (b) = 11, 
-                    expansion (x) = 12, invalid field (-) = 99'''
+                    expansion (x) = 12, invalid field (-) = INVALID_FIELD'''
                 curr_item = curr_line[j]
                 if curr_item == "-":
-                    self.curr_board[x][j] = 99
+                    self.curr_board[x][j] = INVALID_FIELD
                 elif curr_item == "c":
                     self.curr_board[x][j] = 9
                 elif curr_item == "i":
@@ -47,3 +50,10 @@ class Board:
                 else:
                     self.curr_board[x][j] = curr_item
             x = x + 1 # count numpy array to next row
+        # import transitions
+        i = 4 + self.field_height
+        while i < len(board_def):
+            curr_line = board_def[i].split(" ")
+            self.transitions.append([curr_line[:3], curr_line[4:]])
+            i = i + 1
+        print(self.transitions)

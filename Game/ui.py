@@ -31,6 +31,10 @@ class UI:
         :param player_no 
     '''
     def make_move(self, player_no, row, column, valid_options):
+        for i in range(1, len(valid_options)):
+            if valid_options[i] is None:
+                valid_options[i] = [False, -100 , -100]
+
         # north
         if valid_options[0][0]:
             i = 0
