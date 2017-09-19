@@ -4,6 +4,7 @@
 import numpy as np
 from const import INVALID_FIELD
 
+
 class Board:
 
     no_players = 2  # number of players
@@ -49,7 +50,7 @@ class Board:
                     self.curr_board[x][j] = 12
                 else:
                     self.curr_board[x][j] = curr_item
-            x = x + 1 # count numpy array to next row
+            x = x + 1  # count numpy array to next row
         # import transitions
         i = 4 + self.field_height
         while i < len(board_def):

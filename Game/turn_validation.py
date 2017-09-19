@@ -71,6 +71,7 @@ def validate_reversi_logic(board, player_no, row, col):
 
 def transition(board, player_no, opponent_player_range, from_row, from_col, direction):
 
+    to_transition = []
     # search for existing transition
     for t in board.transitions:
         if [from_row, from_col, direction] == t[0]:
@@ -78,7 +79,7 @@ def transition(board, player_no, opponent_player_range, from_row, from_col, dire
             new_direction = t[1][2]
             # get target coordinates of transition
             to_transition = t[1][0:2]
-
+    if not to_transition == []:
             # continue checking in new transition's direction
             if new_direction == 0:
                 return check_south(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
