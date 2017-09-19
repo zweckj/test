@@ -38,112 +38,12 @@ def validate_turn(board, player_no, row, col):
         return False, None
     # empty Field
     elif curr_board[row][col] == 0:
-        return validate_reversi_logic_2(board, player_no, row, col)
+        return validate_reversi_logic(board, player_no, row, col)
 
     return False
 
 
 def validate_reversi_logic(board, player_no, row, col):
-    curr_board = board.curr_board
-    # player range that does not include the currently active player
-    opponent_player_range = [x for x in range(1, 9) if x != player_no]
-
-# TODO transition logic!!!!
-
-# TODO not rectangular boards
-
-    valid_turn = False
-    north_possible = [False, -inf, -inf]
-    south_possible = [False, -inf, -inf]
-    east_possible = [False, -inf, -inf]
-    west_possible = [False, -inf, -inf]
-    northwest_possible = [False, -inf, -inf]
-    northeast_possible = [False, -inf, -inf]
-    southwest_possible = [False, -inf, -inf]
-    southeast_possible = [False, -inf, -inf]
-
-    # check north
-    if row > 0:
-        if curr_board[row - 1][col] in opponent_player_range:
-            for i in range(row - 2, -1, -1):
-                if curr_board[i][col] == player_no:
-                    north_possible = [True, i, col]
-                    valid_turn = True
-                    break
-    # check south
-    if row < board.field_height - 1:
-        if curr_board[row+1][col] in opponent_player_range:
-            for i in range(row + 2, board.field_height):
-                if curr_board[i][col] == player_no:
-                    south_possible = [True, i, col]
-                    valid_turn = True
-                    break
-    # check west
-    if col > 0:
-        if curr_board[row][col - 1] in opponent_player_range:
-            for j in range(col - 2, -1, -1):
-                if curr_board[row][j] == player_no:
-                    west_possible = [True, row, j]
-                    valid_turn = True
-                    break
-    # check east
-    if col < board.field_width - 1:
-        if curr_board[row][col + 1] in opponent_player_range:
-            for j in range(col + 2, board.field_width):
-                if curr_board[row][j] == player_no:
-                    east_possible = [True, row, j]
-                    valid_turn = True
-                    break
-
-    # check north-east
-    if row > 0 and col < board.field_width - 1:
-        if curr_board[row - 1][col + 1] in opponent_player_range:
-            i = 2
-            while row - i >= 0 and col + i < board.field_width:
-                if curr_board[row - i][col + i] == player_no:
-                    northeast_possible = [True, row - i, col + i]
-                    valid_turn = True
-                    break
-                i = i + 1
-
-    # check south-east
-    if row < board.field_height - 1 and col < board.field_width - 1:
-        if curr_board[row + 1][col + 1] in opponent_player_range:
-            i = 2
-            while row + i < board.field_height and col + i < board.field_width:
-                if curr_board[row + i][col + i] == player_no:
-                    southeast_possible = [True, row + i, col + i]
-                    valid_turn = True
-                    break
-                i = i + 1
-
-    # check south-west
-    if row < board.field_height - 1 and col > 0:
-        if curr_board[row + 1][col - 1] in opponent_player_range:
-            i = 2
-            while row + i < board.field_height and col - i >= 0:
-                if curr_board[row + i][col - i] == player_no:
-                    southwest_possible = [True, row + i, col - i]
-                    valid_turn = True
-                    break
-                i = i + 1
-
-    # check north-west
-    if row > 0 and col > 0:
-        if curr_board[row - 1][col - 1] in opponent_player_range:
-            i = 2
-            while row - i >= 0 and col - i >= 0:
-                if curr_board[row - i][col - i] == player_no:
-                    northwest_possible = [True, row - i, col - i]
-                    valid_turn = True
-                    break
-                i = i + 1
-
-    return valid_turn, [north_possible, northeast_possible, east_possible, southeast_possible, south_possible,
-                        southwest_possible, west_possible, northwest_possible]
-
-
-def validate_reversi_logic_2(board, player_no, row, col):
     # player range that does not include the currently active player
     opponent_player_range = [x for x in range(1, 9) if x != player_no]
 
