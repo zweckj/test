@@ -14,11 +14,16 @@ class UI:
             print(board.curr_board)
             i = input("Please enter row: ")
             j = input("Please enter column: ")
-            row = int(i)
-            column = int(j)
+
+            try:
+                row = int(i)
+                column = int(j)
+            except (TypeError, ValueError):
+                print("Please enter a number")
+                continue
 
             valid, valid_options = validate_turn(self.board, player_no, row, column)
-            print(valid_options)
+
             if valid:
                 self.make_move_2(player_no, row, column, valid_options)
                 self.board.curr_board[row][column] = player_no
@@ -28,7 +33,6 @@ class UI:
                     player_no = player_no + 1
             else:
                 print("Attempted turn not possible")
-        return
 
     '''
         function to actually execute the turn, and switch opponent players stones
@@ -115,21 +119,21 @@ class UI:
         # find a transition, continue moving in given direction
         if not to_transition == []:
             if to_transition[2] == 0:
-                self.move_north(player_no, target, to_transition[0], to_transition[1])
-            elif to_transition[2] == 1:
-                self.move_northeast(player_no, target, to_transition[0], to_transition[1])
-            elif to_transition[2] == 2:
-                self.move_east(player_no, target, to_transition[0], to_transition[1])
-            elif to_transition[2] == 3:
-                self.move_southeast(player_no, target, to_transition[0], to_transition[1])
-            elif to_transition[2] == 4:
                 self.move_south(player_no, target, to_transition[0], to_transition[1])
-            elif to_transition[2] == 5:
+            elif to_transition[2] == 1:
                 self.move_southwest(player_no, target, to_transition[0], to_transition[1])
-            elif to_transition[2] == 6:
+            elif to_transition[2] == 2:
                 self.move_west(player_no, target, to_transition[0], to_transition[1])
-            elif to_transition[2] == 7:
+            elif to_transition[2] == 3:
                 self.move_northwest(player_no, target, to_transition[0], to_transition[1])
+            elif to_transition[2] == 4:
+                self.move_north(player_no, target, to_transition[0], to_transition[1])
+            elif to_transition[2] == 5:
+                self.move_northeast(player_no, target, to_transition[0], to_transition[1])
+            elif to_transition[2] == 6:
+                self.move_east(player_no, target, to_transition[0], to_transition[1])
+            elif to_transition[2] == 7:
+                self.move_southeast(player_no, target, to_transition[0], to_transition[1])
 
     def move_north(self, player_no, target, row, col):
         opponent_player_range = [x for x in range(1, 9) if x != player_no]

@@ -79,35 +79,45 @@ def transition(board, player_no, opponent_player_range, from_row, from_col, dire
             new_direction = t[1][2]
             # get target coordinates of transition
             to_transition = t[1][0:2]
+            break
+
     if not to_transition == []:
             # continue checking in new transition's direction
             if new_direction == 0:
-                return check_south(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
+                return check_south(board, player_no, to_transition[0] - 1, to_transition[1],
+                                   opponent_player_range, True)
             elif new_direction == 1:
-                return check_southwest(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
+                return check_southwest(board, player_no, to_transition[0] - 1, to_transition[1] + 1,
+                                       opponent_player_range, True)
             elif new_direction == 2:
-                return check_west(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
+                return check_west(board, player_no, to_transition[0], to_transition[1] + 1,
+                                  opponent_player_range, True)
             elif new_direction == 3:
-                return check_northwest(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
+                return check_northwest(board, player_no, to_transition[0] + 1, to_transition[1] + 1,
+                                       opponent_player_range, True)
             elif new_direction == 4:
-                return check_north(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
+                return check_north(board, player_no, to_transition[0] + 1, to_transition[1],
+                                   opponent_player_range, True)
             elif new_direction == 5:
-                return check_northeast(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
+                return check_northeast(board, player_no, to_transition[0] + 1, to_transition[1] - 1,
+                                       opponent_player_range, True)
             elif new_direction == 6:
-                return check_east(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
+                return check_east(board, player_no, to_transition[0], to_transition[1] - 1,
+                                  opponent_player_range, True)
             elif new_direction == 7:
-                return check_southeast(board, player_no, to_transition[0], to_transition[1], opponent_player_range)
+                return check_southeast(board, player_no, to_transition[0] - 1, to_transition[1] + 1,
+                                       opponent_player_range)
     return [False, -inf, -inf]
 
 
-def check_north(board, player_no, row, col, opponent_player_range):
+def check_north(board, player_no, row, col, opponent_player_range, in_transition=False):
     curr_board = board.curr_board
     # Check for board edge
     if row > 0:
         i = 0
         # Opponent stone present?
-        if curr_board[row - 1][col] in opponent_player_range:
-            for i in range(row - 2, -1, -1):
+        if curr_board[row - 1][col] in opponent_player_range or in_transition:
+            for i in range(row - 1, -1, -1):
                 # find another opponent stone, just continue searching
                 if curr_board[i][col] in opponent_player_range:
                     continue
@@ -116,12 +126,12 @@ def check_north(board, player_no, row, col, opponent_player_range):
                     return [True, i, col]
                 # Found a hole
                 elif curr_board[i][col] == INVALID_FIELD:
-                    return transition(board, player_no, opponent_player_range, i + 1, col, 0)
+                    return transition(board, player_no, opponent_player_range, row - i + 1, col, 0)
                 # Found empty Field
                 elif curr_board[i][col] == 0:
                     return [False, -inf, -inf]
             # edge of board reached, search for transition
-            return transition(board, player_no, i, col, 0)
+            return transition(board, player_no, opponent_player_range, i, col, 0)
         # Found hole in board
         elif curr_board[row - 1][col] == INVALID_FIELD:
             return transition(board, player_no, opponent_player_range, row, col, 0)
@@ -130,18 +140,17 @@ def check_north(board, player_no, row, col, opponent_player_range):
             return [False, -inf, -inf]
     # search for outgoing transition
     else:
-        return transition(board, player_no, row, col, 0)
+        return transition(board, player_no, opponent_player_range, row, col, 0)
 
 
-def check_northeast(board, player_no, row, col, opponent_player_range):
+def check_northeast(board, player_no, row, col, opponent_player_range, in_transition=False):
     curr_board = board.curr_board
     # Check for board edge
     if row > 0 and col < board.field_width - 1:
         # Opponent stone present?
-        if curr_board[row - 1][col + 1] in opponent_player_range:
+        if curr_board[row - 1][col + 1] in opponent_player_range or in_transition:
             i = 1
             while row - i > 0 and col + i < board.field_width - 1:
-                i = i + 1
                 # find another opponent stone, just continue searching
                 if curr_board[row - i][col + i] in opponent_player_range:
                     continue
@@ -154,8 +163,9 @@ def check_northeast(board, player_no, row, col, opponent_player_range):
                 # Found empty Field
                 elif curr_board[row - i][col + i] == 0:
                     return [False, -inf, -inf]
+                i = i + 1
             # edge of board reached, search for transition
-            return transition(board, player_no, row - i, col + i, 1)
+            return transition(board, player_no, opponent_player_range, row - i, col + i, 1)
         # Found hole in board
         elif curr_board[row - 1][col + 1] == INVALID_FIELD:
             return transition(board, player_no, opponent_player_range, row, col, 1)
@@ -164,17 +174,17 @@ def check_northeast(board, player_no, row, col, opponent_player_range):
             return [False, -inf, -inf]
     # search for outgoing transition
     else:
-        return transition(board, player_no, row, col, 1)
+        return transition(board, player_no, opponent_player_range, row, col, 1)
 
 
-def check_east(board, player_no, row, col, opponent_player_range):
+def check_east(board, player_no, row, col, opponent_player_range, in_transition=False):
     curr_board = board.curr_board
     # Check for board edge
     if col < board.field_width - 1:
         j = 0
         # Opponent stone present?
-        if curr_board[row][col + 1] in opponent_player_range:
-            for j in range(col + 2, board.field_width):
+        if curr_board[row][col + 1] in opponent_player_range or in_transition:
+            for j in range(col + 1, board.field_width):
                 # find another opponent stone, just continue searching
                 if curr_board[row][j] in opponent_player_range:
                     continue
@@ -188,7 +198,7 @@ def check_east(board, player_no, row, col, opponent_player_range):
                 elif curr_board[row][j] == 0:
                     return [False, -inf, -inf]
             # edge of board reached, search for transition
-            return transition(board, player_no, row, j, 2)
+            return transition(board, player_no, opponent_player_range, row, j, 2)
         # Found hole in board
         elif curr_board[row][col + 1] == INVALID_FIELD:
             return transition(board, player_no, opponent_player_range, row, col, 2)
@@ -197,18 +207,17 @@ def check_east(board, player_no, row, col, opponent_player_range):
             return [False, -inf, -inf]
     # search for outgoing transition
     else:
-        return transition(board, player_no, row, col, 2)
+        return transition(board, player_no, opponent_player_range, row, col, 2)
 
 
-def check_southeast(board, player_no, row, col, opponent_player_range):
+def check_southeast(board, player_no, row, col, opponent_player_range, in_transition=False):
     curr_board = board.curr_board
     # Check for board edge
     if row < board.field_height - 1 and col < board.field_width - 1:
         # Opponent stone present?
-        if curr_board[row + 1][col + 1] in opponent_player_range:
+        if curr_board[row + 1][col + 1] in opponent_player_range or in_transition:
             i = 1
             while row + i < board.field_height - 1 and col + i < board.field_width - 1:
-                i = i + 1
                 # find another opponent stone, just continue searching
                 if curr_board[row + i][col + i] in opponent_player_range:
                     continue
@@ -221,8 +230,9 @@ def check_southeast(board, player_no, row, col, opponent_player_range):
                 # Found empty Field
                 elif curr_board[row + i][col + i] == 0:
                     return [False, -inf, -inf]
+                i = i + 1
             # edge of board reached, search for transition
-            return transition(board, player_no, row + i, col + i, 3)
+            return transition(board, player_no, opponent_player_range, row + i, col + i, 3)
         # Found hole in board
         elif curr_board[row + 1][col + 1] == INVALID_FIELD:
             return transition(board, player_no, opponent_player_range, row, col, 3)
@@ -231,17 +241,17 @@ def check_southeast(board, player_no, row, col, opponent_player_range):
             return [False, -inf, -inf]
     # search for outgoing transition
     else:
-        return transition(board, player_no, row, col, 3)
+        return transition(board, player_no, opponent_player_range, row, col, 3)
 
 
-def check_south(board, player_no, row, col, opponent_player_range):
+def check_south(board, player_no, row, col, opponent_player_range, in_transition=False):
     curr_board = board.curr_board
     # Check for board edge
     if row < board.field_height - 1:
         i = 0
         # Opponent stone present?
-        if curr_board[row + 1][col] in opponent_player_range:
-            for i in range(row + 2, board.field_height):
+        if curr_board[row + 1][col] in opponent_player_range or in_transition:
+            for i in range(row + 1, board.field_height):
                 # find another opponent stone, just continue searching
                 if curr_board[i][col] in opponent_player_range:
                     continue
@@ -255,7 +265,7 @@ def check_south(board, player_no, row, col, opponent_player_range):
                 elif curr_board[i][col] == 0:
                     return [False, -inf, -inf]
             # edge of board reached, search for transition
-            return transition(board, player_no, i, col, 4)
+            return transition(board, player_no, opponent_player_range, i, col, 4)
         # Found hole in board
         elif curr_board[row + 1][col] == INVALID_FIELD:
             return transition(board, player_no, opponent_player_range, row, col, 4)
@@ -264,18 +274,17 @@ def check_south(board, player_no, row, col, opponent_player_range):
             return [False, -inf, -inf]
     # search for outgoing transition
     else:
-        return transition(board, player_no, row, col, 4)
+        return transition(board, player_no, opponent_player_range, row, col, 4)
 
 
-def check_southwest(board, player_no, row, col, opponent_player_range):
+def check_southwest(board, player_no, row, col, opponent_player_range, in_transition=False):
     curr_board = board.curr_board
     # Check for board edge
     if row < board.field_height - 1 and col > 0:
         # Opponent stone present?
-        if curr_board[row + 1][col - 1] in opponent_player_range:
+        if curr_board[row + 1][col - 1] in opponent_player_range or in_transition:
             i = 1
             while row + i < board.field_height - 1 and col - i > 0:
-                i = i + 1
                 # find another opponent stone, just continue searching
                 if curr_board[row + i][col - i] in opponent_player_range:
                     continue
@@ -288,6 +297,7 @@ def check_southwest(board, player_no, row, col, opponent_player_range):
                 # Found empty Field
                 elif curr_board[row + i][col - i] == 0:
                     return [False, -inf, -inf]
+                i = i + 1
             # edge of board reached, search for transition
             return transition(board, player_no, row + i, col - i, 5)
         # Found hole in board
@@ -298,17 +308,17 @@ def check_southwest(board, player_no, row, col, opponent_player_range):
             return [False, -inf, -inf]
     # search for outgoing transition
     else:
-        return transition(board, player_no, row, col, 5)
+        return transition(board, player_no, opponent_player_range, row, col, 5)
 
 
-def check_west(board, player_no, row, col, opponent_player_range):
+def check_west(board, player_no, row, col, opponent_player_range, in_transition=False):
     curr_board = board.curr_board
     # Check for board edge
     if col > 0:
         j = 0
         # Opponent stone present?
-        if curr_board[row][col - 1] in opponent_player_range:
-            for j in range(col - 2, -1, -1):
+        if curr_board[row][col - 1] in opponent_player_range or in_transition:
+            for j in range(col - 1, -1, -1):
                 # find another opponent stone, just continue searching
                 if curr_board[row][j] in opponent_player_range:
                     continue
@@ -322,7 +332,7 @@ def check_west(board, player_no, row, col, opponent_player_range):
                 elif curr_board[row][j] == 0:
                     return [False, -inf, -inf]
             # edge of board reached, search for transition
-            return transition(board, player_no, row, j, 6)
+            return transition(board, player_no, opponent_player_range, row, j, 6)
         # Found hole in board
         elif curr_board[row][col - 1] == INVALID_FIELD:
             return transition(board, player_no, opponent_player_range, row, col, 6)
@@ -331,18 +341,17 @@ def check_west(board, player_no, row, col, opponent_player_range):
             return [False, -inf, -inf]
     # search for outgoing transition
     else:
-        return transition(board, player_no, row, col, 6)
+        return transition(board, player_no, opponent_player_range, row, col, 6)
 
 
-def check_northwest(board, player_no, row, col, opponent_player_range):
+def check_northwest(board, player_no, row, col, opponent_player_range, in_transition=False):
     curr_board = board.curr_board
     # Check for board edge
     if row > 0 and col > 0:
         # Opponent stone present?
-        if curr_board[row - 1][col - 1] in opponent_player_range:
+        if curr_board[row - 1][col - 1] in opponent_player_range or in_transition:
             i = 1
             while row - i > 0 and col - i > 0:
-                i = i + 1
                 # find another opponent stone, just continue searching
                 if curr_board[row - i][col - i] in opponent_player_range:
                     continue
@@ -355,8 +364,9 @@ def check_northwest(board, player_no, row, col, opponent_player_range):
                 # Found empty Field
                 elif curr_board[row - i][col - i] == 0:
                     return [False, -inf, -inf]
+                i = i + 1
             # edge of board reached, search for transition
-            return transition(board, player_no, row - i, col - i, 7)
+            return transition(board, player_no, opponent_player_range, row - i, col - i, 7)
         # Found hole in board
         elif curr_board[row - 1][col - 1] == INVALID_FIELD:
             return transition(board, player_no, opponent_player_range, row, col, 7)
@@ -365,4 +375,4 @@ def check_northwest(board, player_no, row, col, opponent_player_range):
             return [False, -inf, -inf]
     # search for outgoing transition
     else:
-        return transition(board, player_no, row, col, 7)
+        return transition(board, player_no, opponent_player_range, row, col, 7)

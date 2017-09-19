@@ -55,6 +55,7 @@ class Board:
         i = 4 + self.field_height
         while i < len(board_def):
             curr_line = board_def[i].split(" ")
-            self.transitions.append([curr_line[:3], curr_line[4:]])
+            self.transitions.append([list(map(int, curr_line[:3])), list(map(int, curr_line[4:]))])
+            self.transitions.append([list(map(int, curr_line[4:])), list(map(int, curr_line[:3]))])
             i = i + 1
         print(self.transitions)
